@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">SQLiteDB</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_student_detail">Student Details</string>
+
+    <string name="button_add">Add</string>
+    <string name="button_list_all">List All</string>
+    <string name="button_exit">Exit</string>
+    <string name="button_close">Close</string>
+    <string name="button_save">Save</string>
+    <string name="button_delete">Delete</string>
+
+    <string name="label_name">Name</string>
+    <string name="label_email">Email</string>
+    <string name="label_age">Age</string>
+    <string name="label_student_details">Student details</string>
+    <string name="label_students">Students</string>
+</resources>
