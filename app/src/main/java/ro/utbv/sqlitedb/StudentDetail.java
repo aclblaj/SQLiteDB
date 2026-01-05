@@ -7,16 +7,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class StudentDetail extends AppCompatActivity implements android.view.View.OnClickListener{
 
     Button btnSave ,  btnDelete;
     Button btnClose;
+    Button btnGetAddress;
     EditText editTextName;
     EditText editTextEmail;
     EditText editTextAge;
+    EditText editTextZip;
+    TextView textViewAddress;
     private int _Student_Id=0;
 
     @Override
@@ -27,14 +36,18 @@ public class StudentDetail extends AppCompatActivity implements android.view.Vie
         btnSave = (Button) findViewById(R.id.btnSave);
         btnDelete = (Button) findViewById(R.id.btnDelete);
         btnClose = (Button) findViewById(R.id.btnClose);
+        btnGetAddress = (Button) findViewById(R.id.btnGetAddress);
 
         editTextName = (EditText) findViewById(R.id.editTextName);
         editTextEmail = (EditText) findViewById(R.id.editTextEmail);
         editTextAge = (EditText) findViewById(R.id.editTextAge);
+        editTextZip = (EditText) findViewById(R.id.editTextZip);
+        textViewAddress = (TextView) findViewById(R.id.textViewAddress);
 
         btnSave.setOnClickListener(this);
         btnDelete.setOnClickListener(this);
         btnClose.setOnClickListener(this);
+        btnGetAddress.setOnClickListener(this);
 
 
         _Student_Id =0;
@@ -115,6 +128,42 @@ public class StudentDetail extends AppCompatActivity implements android.view.Vie
             finish();
         }else if (view== findViewById(R.id.btnClose)){
             finish();
+        } else if (view == findViewById(R.id.btnGetAddress)) {
+            String zipCode = editTextZip.getText().toString();
+            if (zipCode.isEmpty()) {
+                Toast.makeText(this, "Please enter a zip code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("http://192.168.0.102:8000/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            StudentApiService service = retrofit.create(StudentApiService.class);
+            // http://10.216.100.142:8000/adresa?zc=123456
+            Call<Address> call = service.getStudentAddress(zipCode);
+
+            call.enqueue(new Callback<Address>() {
+                @Override
+                public void onResponse(Call<Address> call, Response<Address> response) {
+                    if (response.isSuccessful()) {
+                        Address address = response.body();
+                        if (address != null) {
+                            textViewAddress.setText("Address: " + address.getStreet() + ", " + address.getCity());
+                        } else {
+                            textViewAddress.setText("Address not found");
+                        }
+                    } else {
+                        textViewAddress.setText("Error: " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Address> call, Throwable t) {
+                    textViewAddress.setText("Failure: " + t.getMessage());
+                }
+            });
         }
 
 
